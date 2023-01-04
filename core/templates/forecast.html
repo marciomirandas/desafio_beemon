@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Previsão do Tempo{% endblock %}
+
+{% block content %}
+
+<h1>{{results.city.name}}</h1>
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+        <th scope="col">Data - Hora</th>
+        <th scope="col">Temperatura (°C)</th>
+        <th scope="col">Umidade (%)</th>
+        <th scope="col">Clima</th>
+        <th scope="col">Nuvens (%)</th>
+        <th scope="col">Chuva nas Últimas 3h (mm)</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for result in results.list %}
+
+        <tr>
+            <td>{{result.dt_txt}}</td>
+            <td>{{result.main.temp}}</td>
+            <td>{{result.main.humidity}}</td>
+            <td>{{result.weather.0.description}}</td>
+            <td>{{result.clouds.all}}</td>
+            <td>{{result.rain.3h}}</td>
+        </tr>
+
+        {% endfor %}
+        
+        
+    </tbody>
+</table>
+
+
+
+{% endblock %}
