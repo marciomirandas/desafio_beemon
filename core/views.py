@@ -1,8 +1,8 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from .forms import IndexForm
-from .models import Record
+from .models import Record, Tag
 
 import time
 import pandas as pd
@@ -11,6 +11,7 @@ import json
 import glob
 import io
 import sys
+import os
 
 from PIL import Image
 from selenium import webdriver
@@ -26,6 +27,7 @@ def index(request):
 
         if form.is_valid():
 
+            logging.basicConfig(level=logging.INFO, filename='core/app.log', format='%(asctime)s - %(levelname)s - %(message)s')
             logging.info('Inicio do programa')
             
             driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
@@ -57,25 +59,7 @@ def index(request):
                     author_link = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div[1]/div[{i}]/span[2]/a').get_attribute('href')
                     dictionary["author"] = {"name" : author, "link": author_link}
 
-
-                    # Pega todas os elementos com a classe 'tag'
-                    tags_div = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div[1]/div[{i}]/div')
-                    tags = tags_div.find_elements(By.CLASS_NAME, 'tag')
-
-                    j = 1
-                    list_tags = []
-                    for tag in tags:
-                        
-                        tag_name = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div[1]/div[{i}]/div/a[{j}]').text
-                        tag_link = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div[1]/div[{i}]/div/a[{j}]').get_attribute('href')
-
-                        list_tags.append({'tag_name' : tag_name, 'tag_link': tag_link})
-                        
-                        j += 1
                     
-                    dictionary["tags"] = list_tags
-
-
                     # Entra na página do autor
                     driver.find_element(By.XPATH, f'/html/body/div/div[2]/div[1]/div[{i}]/span[2]/a').click()
                     time.sleep(2)
@@ -104,13 +88,43 @@ def index(request):
 
 
                     # Salva os dados no banco de dados
-                    Record.objects.create(
-                        quote = dictionary["quote"],
-                        author = dictionary["author"],
-                        tag = dictionary["tags"],
-                        pag = dictionary["page"],
+                    record = Record.objects.create(
+                        quote = quote,
+                        author = author,
+                        author_link = author_link,
+                        born = born_date,
+                        place = born_location,
+                        description = description,
                         image = new_pic
                         )
+
+
+                    # Pega todas os elementos com a classe 'tag'
+                    tags_div = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div[1]/div[{i}]/div')
+                    tags = tags_div.find_elements(By.CLASS_NAME, 'tag')
+
+                    j = 1
+                    list_tags = []
+                    for tag in tags:
+                        
+                        tag_name = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div[1]/div[{i}]/div/a[{j}]').text
+                        tag_link = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div[1]/div[{i}]/div/a[{j}]').get_attribute('href')
+
+                        list_tags.append({'tag_name' : tag_name, 'tag_link': tag_link})
+
+                        Tag.objects.create(
+                            name = tag_name,
+                            link = tag_link,
+                            record = record
+                        )
+
+                        
+                        j += 1
+                    
+                    dictionary["tags"] = list_tags
+
+
+                
 
                     # Adiciona o dicionário a lista
                     list.append(dictionary)
@@ -118,7 +132,7 @@ def index(request):
 
 
                     # ----------- Povisório -----------
-                    if i == 3:
+                    if i == 2:
                         break
                 
                 # Tenta clicar no link da próxima página, se não existir, encerra o while
@@ -161,3 +175,58 @@ def index(request):
         }
     
     return render(request, 'index.html', context)
+
+
+def data(request):
+    
+    context = {
+        'records': Record.objects.all().order_by('-id'),
+        'tags': Tag.objects.all()
+            
+        }
+    
+    return render(request, 'data.html', context)
+
+
+def data_id(request, id):
+    record = get_object_or_404(Record, id=id)
+    
+    context = {
+        'record': record,
+        'tags': Tag.objects.filter(record=record) 
+        }
+    
+    return render(request, 'data_id.html', context)
+
+
+def dataframe(request):
+    df = pd.DataFrame(list(Record.objects.all().values()))
+    df = df.drop('image', axis=1)
+    df = df.drop('description', axis=1)
+
+    df_html = df.to_html(index=False)
+    
+    print(df_html)
+    #return HttpResponse(df_html)
+
+    context = {
+        'df': df
+        }
+    
+    return render(request, 'dataframe.html', context)
+
+
+def log(request):
+
+    module_dir = os.path.dirname(__file__)
+    file_path = os.path.join(module_dir, 'app.log')
+
+    with open(file_path) as f:
+        f = f.readlines()
+
+    context = {
+        'logs': f   
+        }
+    
+    return render(request, 'log.html', context)
+

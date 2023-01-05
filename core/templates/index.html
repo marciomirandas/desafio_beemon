@@ -4,10 +4,6 @@
 
 {% block content %}
 
-<br><br>
-<h1>Raspagem de dados</h1>
-<br>
-
 {% if messages %} 
     {% for message in messages %}
         <div class="alert alert-danger" role="alert">
@@ -17,9 +13,11 @@
 {% endif %}
 
 
-
-
 {% if json %}
+
+<br><br>
+<h1>Dados Coletados na Última Raspagem</h1>
+<br>
 
 <div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-around;">
 
@@ -29,23 +27,25 @@
             <div class="card-header"><a style="text-decoration: none;" href={{j.author.link}}>{{j.author.name}}</a></div>
             
             <div class="card-body">
-                <p>{{j.page.date}}, {{j.page.location}}</p>
-                <h5 class="card-title">"{{j.quote}}"</h5>
-                <p>{{j.page.description}}</p>
+                <p>{{ j.page.date }}, {{ j.page.location }}</p>
+                <h5 class="card-title">"{{ j.quote }}"</h5>
+                <p style="text-align: justify;">{{ j.page.description | slice:":200" }}...</p>
                 {% for tag in j.tags %}
-                    <a href={{tag.tag_link}}>{{tag.tag_name}}</a>
+                    <a href={{ tag.tag_link }}>{{ tag.tag_name }}</a>
                 {% endfor %}
             </div>
         </div>
         
     {% endfor %}
 
-    {{df_html}}
-
 </div>
 
 
 {% else %}
+
+<br><br>
+<h1>Dados Coletados na Última Raspagem</h1>
+<br>
 
 <form action="{% url 'index'%}" method='POST'>
     {% csrf_token %}
@@ -55,7 +55,6 @@
 </form>
 
 {% endif %}
-
 
 
 

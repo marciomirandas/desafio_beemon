@@ -1,0 +1,7 @@
+2023-01-05 02:30:08,781 - INFO - Inicio do programa
+2023-01-05 02:30:08,781 - INFO - ====== WebDriver manager ======
+2023-01-05 02:30:12,985 - INFO - Get LATEST chromedriver version for google-chrome 108.0.5359
+2023-01-05 02:30:15,760 - INFO - Driver [C:\Users\marci\.wdm\drivers\chromedriver\win32\108.0.5359\chromedriver.exe] found in cache
+2023-01-05 02:30:33,654 - INFO - Iteracao 1
+2023-01-05 02:31:24,775 - INFO - Fim do programa
+2023-01-05 02:31:33,971 - INFO - C:\Users\marci\Desktop\python\desafio_beemon\core\views.py changed, reloading.

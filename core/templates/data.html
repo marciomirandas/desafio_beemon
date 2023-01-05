@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Banco de Dados{% endblock %}
+
+{% block content %}
+
+    <br><br>
+    <h1 style="text-align: center;">Banco de Dados</h1>
+    <br>
+
+    <div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-around;">
+
+        {% for record in records %}
+
+            <div class="card" style="width: 18rem; margin-bottom: 50px;">
+                <a href="{% url 'data_id' record.id %}"><img src="{{ record.image.thumb.url }}" class="card-img-top" alt=""></a>
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{{record.author_link}}" target="_blank">{{ record.author }}</a></h5>
+                    <p class="card-text">"{{ record.quote }}"</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item">{{ record.born }}</li>
+                <li class="list-group-item">{{ record.place }}</li>
+                <li class="list-group-item">{{ record.description | slice:":200" }}...</li>
+                </ul>
+                <div class="card-body">
+                    
+                    {% for tag in tags %}
+                        {% if tag.record.id == record.id %}
+                            <a href="{{ tag.link }}" class="card-link" target="_blank">{{ tag.name }}</a>
+                        {% endif %}
+                    {% endfor %}
+                
+                </div>
+            </div>
+ 
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

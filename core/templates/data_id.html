@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Autor{% endblock %}
+
+{% block content %}
+
+
+    <div class="card text-bg-secondary mb-5" style="width: 100%; margin-top: 50px">
+        <div class="card-header"><a style="text-decoration: none;" href={{ record.author_link }} target="_blank">{{ record.author }}</a></div>
+        
+        <div class="card-body">
+            <p>{{ record.born }}, {{ record.place }}</p>
+            <h5 class="card-title">"{{ record.quote }}"</h5><br>
+            <p style="text-align: justify;">{{ record.description }}</p>
+            {% for tag in tags %}
+                <a href="{{ tag.link }}"" target="_blank">{{ tag.name }}</a>
+            {% endfor %}
+            <br><br>
+            <img src="{{ record.image.url }}" class="card-img-top" alt="">
+        </div>
+    </div>
+
+{% endblock %}
