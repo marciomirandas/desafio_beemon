@@ -8,9 +8,20 @@
     <h1 style="text-align: center;">Log</h1>
     <br>
 
-    <div >
-        {{ df }}
+    {% if logs %}
 
-    </div>
+        <div>
+            {% for log in logs %}
+
+                <p>{{log}}</p>
+
+            {% endfor %}
+        </div>
+
+    {% else %}
+
+        <h3 style="text-align: center;">Ainda não existe dados</h3>
+
+    {% endif %}
 
 {% endblock %}

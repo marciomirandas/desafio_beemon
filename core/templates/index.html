@@ -4,58 +4,46 @@
 
 {% block content %}
 
-{% if messages %} 
-    {% for message in messages %}
-        <div class="alert alert-danger" role="alert">
-            {{ message }}
+    {% if json %}
+
+        <br><br>
+        <h1>Dados Coletados na Última Raspagem</h1>
+        <br>
+
+        <div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-around;">
+
+            {% for j in json %}
+
+                <div class="card text-bg-secondary mb-5" style="width: 100%; ">
+                    <div class="card-header"><a style="text-decoration: none;" href={{j.author.link}}>{{j.author.name}}</a></div>
+                    
+                    <div class="card-body">
+                        <p>{{ j.page.date }}, {{ j.page.location }}</p>
+                        <h5 class="card-title">"{{ j.quote }}"</h5>
+                        <p style="text-align: justify;">{{ j.page.description | slice:":200" }}...</p>
+                        {% for tag in j.tags %}
+                            <a href={{ tag.tag_link }}>{{ tag.tag_name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+            {% endfor %}
+
         </div>
-    {% endfor %}  
-{% endif %}
 
+    {% else %}
 
-{% if json %}
+        <br><br>
+        <h1>Insira data e hora para programar a raspagem de dados</h1>
+        <br>
 
-<br><br>
-<h1>Dados Coletados na Última Raspagem</h1>
-<br>
+        <form action="{% url 'index'%}" method='POST'>
+            {% csrf_token %}
 
-<div style="display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-around;">
+            {{form.as_p }}
+            <button type="submit" class="btn btn-success"> Programar </button>
+        </form>
 
-    {% for j in json %}
-
-        <div class="card text-bg-secondary mb-5" style="width: 100%; ">
-            <div class="card-header"><a style="text-decoration: none;" href={{j.author.link}}>{{j.author.name}}</a></div>
-            
-            <div class="card-body">
-                <p>{{ j.page.date }}, {{ j.page.location }}</p>
-                <h5 class="card-title">"{{ j.quote }}"</h5>
-                <p style="text-align: justify;">{{ j.page.description | slice:":200" }}...</p>
-                {% for tag in j.tags %}
-                    <a href={{ tag.tag_link }}>{{ tag.tag_name }}</a>
-                {% endfor %}
-            </div>
-        </div>
-        
-    {% endfor %}
-
-</div>
-
-
-{% else %}
-
-<br><br>
-<h1>Dados Coletados na Última Raspagem</h1>
-<br>
-
-<form action="{% url 'index'%}" method='POST'>
-    {% csrf_token %}
-
-    {{form.as_p }}
-    <button type="submit" class="btn btn-success"> Ver Previsão </button>
-</form>
-
-{% endif %}
-
-
+    {% endif %}
 
 {% endblock %}

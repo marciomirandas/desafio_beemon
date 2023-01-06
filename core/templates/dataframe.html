@@ -8,9 +8,40 @@
     <h1 style="text-align: center;">Dataframe</h1>
     <br>
 
-    <div >
-        
+    {% if dataframe %}
 
-    </div>
+        <div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Nascimento</th>
+                    <th scope="col">Citação</th>
+                </tr>
+                </thead>
+                <tbody>
+                
+                    {% for df in dataframe %}
+
+                        <tr>
+                            <th scope="row">{{ df.id }}</th>
+                            <td>{{ df.author }}</td>
+                            <td>{{ df.born }}</td>
+                            <td>{{ df.quote }}</td>
+                            
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+    {% else %}
+        
+        <h3 style="text-align: center;">Ainda não existe dados</h3>
+
+    {% endif %}
 
 {% endblock %}
